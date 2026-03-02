@@ -125,10 +125,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 border-b-4 border-yellow-500 px-6 py-6">
+      <header className="bg-gradient-to-r from-gray-950 via-red-950 to-gray-950 border-b-4 border-red-600 px-6 py-6">
         <div className="max-w-2xl mx-auto text-center">
           <h1 className="text-3xl font-bold tracking-tight">⚾ Player Cards</h1>
-          <p className="text-blue-200 mt-1">Get to know your teammates</p>
+          <p className="text-red-300/70 mt-1">Get to know your teammates</p>
         </div>
       </header>
 
@@ -138,10 +138,10 @@ export default function Home() {
           <div className="space-y-6">
             {/* Photo Upload */}
             <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-              <h2 className="text-lg font-semibold text-yellow-500 mb-4">📸 Player Photo</h2>
+              <h2 className="text-lg font-semibold text-red-500 mb-4">📸 Player Photo</h2>
               <div className="flex items-center gap-4">
                 <div
-                  className="w-24 h-24 rounded-full bg-gray-800 border-2 border-dashed border-gray-600 flex items-center justify-center overflow-hidden cursor-pointer hover:border-yellow-500 transition-colors"
+                  className="w-24 h-24 rounded-full bg-gray-800 border-2 border-dashed border-gray-600 flex items-center justify-center overflow-hidden cursor-pointer hover:border-red-500 transition-colors"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   {player.photo ? (
@@ -165,7 +165,7 @@ export default function Home() {
 
             {/* Basic Info */}
             <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-              <h2 className="text-lg font-semibold text-yellow-500 mb-4">🧢 Player Info</h2>
+              <h2 className="text-lg font-semibold text-red-500 mb-4">🧢 Player Info</h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-gray-400 mb-1">Player Name *</label>
@@ -174,7 +174,7 @@ export default function Home() {
                     value={player.name}
                     onChange={(e) => updateField("name", e.target.value)}
                     placeholder="e.g. Carter Schmeling"
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
                   />
                 </div>
                 <div>
@@ -184,7 +184,7 @@ export default function Home() {
                     value={player.number}
                     onChange={(e) => updateField("number", e.target.value)}
                     placeholder="e.g. 7"
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
                   />
                 </div>
               </div>
@@ -192,7 +192,7 @@ export default function Home() {
 
             {/* Fun Facts */}
             <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-              <h2 className="text-lg font-semibold text-yellow-500 mb-4">🍬 Fun Facts</h2>
+              <h2 className="text-lg font-semibold text-red-500 mb-4">🍬 Fun Facts</h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-gray-400 mb-1">Favorite Candy</label>
@@ -201,7 +201,7 @@ export default function Home() {
                     value={player.favoriteCandy}
                     onChange={(e) => updateField("favoriteCandy", e.target.value)}
                     placeholder="e.g. Sour Patch Kids"
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
                   />
                 </div>
                 <div>
@@ -211,7 +211,7 @@ export default function Home() {
                     value={player.outsideActivity}
                     onChange={(e) => updateField("outsideActivity", e.target.value)}
                     placeholder="e.g. Play video games, go fishing"
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
                   />
                 </div>
                 <div>
@@ -221,7 +221,7 @@ export default function Home() {
                     onChange={(e) => updateField("favoriteMemory", e.target.value)}
                     placeholder="e.g. Hitting my first home run in the championship game"
                     rows={3}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500 resize-none"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 resize-none"
                   />
                 </div>
               </div>
@@ -229,7 +229,7 @@ export default function Home() {
 
             {/* Family */}
             <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-              <h2 className="text-lg font-semibold text-yellow-500 mb-4">👨‍👩‍👧‍👦 Family (including pets!)</h2>
+              <h2 className="text-lg font-semibold text-red-500 mb-4">👨‍👩‍👧‍👦 Family (including pets!)</h2>
               <div className="space-y-3">
                 {player.family.map((member, i) => (
                   <div key={i} className="flex gap-2 items-start">
@@ -238,14 +238,14 @@ export default function Home() {
                       value={member.name}
                       onChange={(e) => updateFamily(i, "name", e.target.value)}
                       placeholder="Name"
-                      className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                      className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
                     />
                     <input
                       type="text"
                       value={member.relation}
                       onChange={(e) => updateFamily(i, "relation", e.target.value)}
                       placeholder="e.g. Mom, Dog"
-                      className="w-28 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                      className="w-28 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
                     />
                     {player.family.length > 1 && (
                       <button
@@ -259,7 +259,7 @@ export default function Home() {
                 ))}
                 <button
                   onClick={addFamilyMember}
-                  className="text-sm text-yellow-500 hover:text-yellow-400 mt-2"
+                  className="text-sm text-red-500 hover:text-red-400 mt-2"
                 >
                   + Add family member
                 </button>
@@ -270,7 +270,7 @@ export default function Home() {
             <button
               onClick={generateCard}
               disabled={!isFormValid}
-              className="w-full bg-yellow-500 hover:bg-yellow-400 disabled:bg-gray-700 disabled:text-gray-500 text-gray-900 font-bold py-3 rounded-xl text-lg transition-colors"
+              className="w-full bg-red-600 hover:bg-red-500 disabled:bg-gray-700 disabled:text-gray-500 text-gray-900 font-bold py-3 rounded-xl text-lg transition-colors"
             >
               Generate Player Card ⚾
             </button>
@@ -280,7 +280,7 @@ export default function Home() {
           <div className="space-y-6">
             <button
               onClick={() => setShowCard(false)}
-              className="text-blue-400 hover:text-blue-300 text-sm"
+              className="text-red-400 hover:text-red-300 text-sm"
             >
               ← Back to edit
             </button>
@@ -288,66 +288,71 @@ export default function Home() {
             {/* The Card */}
             <div
               ref={cardRef}
-              className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 rounded-2xl overflow-hidden border-4 border-yellow-500 shadow-2xl"
-              style={{ width: "100%", maxWidth: 480 }}
+              className="relative rounded-2xl overflow-hidden border-4 border-red-600 shadow-2xl"
+              style={{ width: "100%", maxWidth: 520, background: "linear-gradient(135deg, #1a1a1a 0%, #111111 40%, #2a0a0a 100%)" }}
             >
-              {/* Baseball stitching decoration */}
-              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500" />
-              <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500" />
+              {/* Top accent bar */}
+              <div className="h-2" style={{ background: "linear-gradient(90deg, #dc2626, #ef4444, #dc2626)" }} />
 
-              <div className="p-6">
-                {/* Header with photo and name */}
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-24 h-24 rounded-full border-4 border-yellow-500 overflow-hidden bg-blue-950 flex-shrink-0 shadow-lg">
-                    {player.photo ? (
-                      <img src={player.photo} alt={player.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-4xl">⚾</div>
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-3xl font-extrabold text-white leading-tight">{player.name}</div>
-                    <div className="text-yellow-400 text-xl font-bold mt-1">#{player.number}</div>
-                  </div>
+              {/* Header: Name left, Photo right */}
+              <div className="flex items-stretch">
+                <div className="flex-1 p-6 flex flex-col justify-center">
+                  <div className="text-4xl font-extrabold text-white leading-tight">{player.name}</div>
+                  <div className="text-red-500 text-2xl font-bold mt-1">#{player.number}</div>
+                  <div className="mt-2 text-xs font-bold uppercase tracking-widest text-red-400/60">KC Blaze</div>
                 </div>
+                <div className="w-40 h-44 relative flex-shrink-0 overflow-hidden">
+                  {/* Diagonal clip background */}
+                  <div className="absolute inset-0 bg-red-900/30" style={{ clipPath: "polygon(20% 0, 100% 0, 100% 100%, 0 100%)" }} />
+                  {player.photo ? (
+                    <img src={player.photo} alt={player.name} className="absolute inset-0 w-full h-full object-cover object-top" />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-30">⚾</div>
+                  )}
+                  {/* Number overlay */}
+                  <div className="absolute bottom-2 right-3 text-6xl font-extrabold text-white/10 leading-none">{player.number}</div>
+                </div>
+              </div>
 
+              {/* Divider */}
+              <div className="h-px mx-4" style={{ background: "linear-gradient(90deg, transparent, #dc2626, transparent)" }} />
+
+              <div className="p-5 space-y-3">
                 {/* Fun Facts */}
-                <div className="space-y-3 mb-5">
-                  {player.favoriteCandy && (
-                    <div className="bg-blue-950/60 rounded-lg px-4 py-3">
-                      <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-1">🍬 Favorite Candy</div>
-                      <div className="text-white text-sm">{player.favoriteCandy}</div>
-                    </div>
-                  )}
-                  {player.outsideActivity && (
-                    <div className="bg-blue-950/60 rounded-lg px-4 py-3">
-                      <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-1">🎮 Outside of Baseball</div>
-                      <div className="text-white text-sm">{player.outsideActivity}</div>
-                    </div>
-                  )}
-                  {player.favoriteMemory && (
-                    <div className="bg-blue-950/60 rounded-lg px-4 py-3">
-                      <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-1">⭐ Favorite Baseball Memory</div>
-                      <div className="text-white text-sm">{player.favoriteMemory}</div>
-                    </div>
-                  )}
-                </div>
+                {player.favoriteCandy && (
+                  <div className="bg-white/5 rounded-lg px-4 py-3 border border-white/5">
+                    <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">🍬 Favorite Candy</div>
+                    <div className="text-white text-sm">{player.favoriteCandy}</div>
+                  </div>
+                )}
+                {player.outsideActivity && (
+                  <div className="bg-white/5 rounded-lg px-4 py-3 border border-white/5">
+                    <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">🎮 Outside of Baseball</div>
+                    <div className="text-white text-sm">{player.outsideActivity}</div>
+                  </div>
+                )}
+                {player.favoriteMemory && (
+                  <div className="bg-white/5 rounded-lg px-4 py-3 border border-white/5">
+                    <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">⭐ Favorite Baseball Memory</div>
+                    <div className="text-white text-sm">{player.favoriteMemory}</div>
+                  </div>
+                )}
 
                 {/* Family */}
                 {player.family.some((m) => m.name) && (
-                  <div className="bg-blue-950/60 rounded-lg px-4 py-3">
-                    <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-2">👨‍👩‍👧‍👦 Family</div>
+                  <div className="bg-white/5 rounded-lg px-4 py-3 border border-white/5">
+                    <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-2">👨‍👩‍👧‍👦 Family</div>
                     <div className="flex flex-wrap gap-2">
                       {player.family
                         .filter((m) => m.name)
                         .map((m, i) => (
                           <span
                             key={i}
-                            className="bg-blue-800/80 text-white text-xs px-3 py-1 rounded-full"
+                            className="bg-red-900/40 text-white text-xs px-3 py-1 rounded-full border border-red-800/30"
                           >
                             {m.name}
                             {m.relation && (
-                              <span className="text-blue-300 ml-1">({m.relation})</span>
+                              <span className="text-red-300/70 ml-1">({m.relation})</span>
                             )}
                           </span>
                         ))}
@@ -355,6 +360,9 @@ export default function Home() {
                   </div>
                 )}
               </div>
+
+              {/* Bottom accent bar */}
+              <div className="h-2" style={{ background: "linear-gradient(90deg, #dc2626, #ef4444, #dc2626)" }} />
             </div>
 
             {/* Action Buttons */}
@@ -362,14 +370,14 @@ export default function Home() {
               <button
                 onClick={downloadImage}
                 disabled={generating}
-                className="flex-1 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 text-gray-900 font-bold py-3 rounded-xl transition-colors"
+                className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-gray-900 font-bold py-3 rounded-xl transition-colors"
               >
                 {generating ? "Generating..." : "📥 Download"}
               </button>
               <button
                 onClick={shareImage}
                 disabled={generating}
-                className="flex-1 bg-blue-700 hover:bg-blue-600 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-colors"
+                className="flex-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-colors"
               >
                 {generating ? "..." : "📤 Share"}
               </button>
