@@ -387,21 +387,13 @@ export default function Home() {
               >
                 <div className={`card-inner ${flipped ? "flipped" : ""}`}>
                   {/* ===== FRONT ===== */}
-                  <div className="card-face" ref={frontRef}>
-                    <div
-                      style={{
-                        width: CARD_W,
-                        height: CARD_H,
-                        position: "relative",
-                        fontFamily: "'Georgia', 'Times New Roman', serif",
-                      }}
-                    >
+                  <div className="card-face" ref={frontRef} style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
                       {/* Borders */}
                       <div style={{ position: "absolute", inset: 0, borderRadius: 12, border: "8px solid #b91c1c", boxSizing: "border-box", zIndex: 10, pointerEvents: "none" }} />
                       <div style={{ position: "absolute", inset: 8, borderRadius: 6, border: "3px solid #d4a843", boxSizing: "border-box", zIndex: 10, pointerEvents: "none" }} />
 
                       {/* Background */}
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 50%, #1a0a0a 100%)", borderRadius: 12 }} />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 50%, #1a0a0a 100%)" }} />
 
                       {/* Photo area */}
                       <div style={{ position: "absolute", top: 14, left: 14, right: 14, height: 460, borderRadius: 4, overflow: "hidden", background: "#222" }}>
@@ -426,7 +418,7 @@ export default function Home() {
                       </div>
 
                       {/* Nameplate */}
-                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 220, background: "linear-gradient(180deg, #1a0808 0%, #0d0505 100%)", borderRadius: "0 0 12px 12px" }}>
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 220, background: "linear-gradient(180deg, #1a0808 0%, #0d0505 100%)" }}>
                         <div style={{ position: "absolute", top: 0, left: 14, right: 14, height: 3, background: "linear-gradient(90deg, transparent, #d4a843, transparent)" }} />
                         <div style={{ paddingTop: 20, textAlign: "center" }}>
                           <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#d4a843", marginBottom: 6 }}>KC Blaze</div>
@@ -438,26 +430,17 @@ export default function Home() {
                           <div style={{ width: 60, height: 1, background: "linear-gradient(90deg, #d4a843, transparent)" }} />
                         </div>
                       </div>
-                    </div>
                   </div>
 
                   {/* ===== BACK ===== */}
-                  <div className="card-face card-face-back" ref={backRef}>
-                    <div
-                      style={{
-                        width: CARD_W,
-                        height: CARD_H,
-                        position: "relative",
-                        fontFamily: "Arial, sans-serif",
-                      }}
-                    >
+                  <div className="card-face card-face-back" ref={backRef} style={{ fontFamily: "Arial, sans-serif" }}>
                       {/* Borders */}
                       <div style={{ position: "absolute", inset: 0, borderRadius: 12, border: "8px solid #b91c1c", boxSizing: "border-box", zIndex: 10, pointerEvents: "none" }} />
                       <div style={{ position: "absolute", inset: 8, borderRadius: 6, border: "3px solid #d4a843", boxSizing: "border-box", zIndex: 10, pointerEvents: "none" }} />
 
                       {/* Background */}
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #f5f0e8 0%, #ede6d8 50%, #e8e0d0 100%)", borderRadius: 12 }} />
-                      <div style={{ position: "absolute", inset: 0, opacity: 0.04, backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 15px, #b91c1c 15px, #b91c1c 16px), repeating-linear-gradient(-45deg, transparent, transparent 15px, #b91c1c 15px, #b91c1c 16px)", borderRadius: 12 }} />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #f5f0e8 0%, #ede6d8 50%, #e8e0d0 100%)" }} />
+                      <div style={{ position: "absolute", inset: 0, opacity: 0.04, backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 15px, #b91c1c 15px, #b91c1c 16px), repeating-linear-gradient(-45deg, transparent, transparent 15px, #b91c1c 15px, #b91c1c 16px)" }} />
 
                       {/* Content */}
                       <div style={{ position: "relative", zIndex: 5, padding: "24px 28px", height: "100%", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
@@ -509,7 +492,6 @@ export default function Home() {
                           <div style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#999", fontWeight: 700 }}>KC Blaze &bull; 2026 Season</div>
                         </div>
                       </div>
-                    </div>
                   </div>
                 </div>
               </div>
