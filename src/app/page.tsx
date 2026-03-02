@@ -289,61 +289,51 @@ export default function Home() {
             <div
               ref={cardRef}
               className="relative overflow-hidden"
-              style={{ width: 900, height: 400, borderRadius: 16, background: "linear-gradient(135deg, #1a1a1a 0%, #111111 40%, #2a0a0a 100%)", border: "4px solid #dc2626" }}
+              style={{ width: 900, height: 400, borderRadius: 16, border: "4px solid #dc2626" }}
             >
+              {/* Background with subtle pattern */}
+              <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #1f1215 0%, #2a1a1e 30%, #1e1215 60%, #2d1f23 100%)" }} />
+              {/* Subtle diamond pattern overlay */}
+              <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(220,38,38,0.3) 20px, rgba(220,38,38,0.3) 21px), repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(220,38,38,0.3) 20px, rgba(220,38,38,0.3) 21px)" }} />
+              {/* Radial glow behind photo area */}
+              <div className="absolute right-20 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(220,38,38,0.08) 0%, transparent 70%)" }} />
+
               {/* Top accent bar */}
-              <div className="h-2" style={{ background: "linear-gradient(90deg, #dc2626, #ef4444, #dc2626)" }} />
+              <div className="relative h-2" style={{ background: "linear-gradient(90deg, #dc2626, #ef4444, #dc2626)" }} />
 
-              <div className="flex items-stretch" style={{ height: 388 }}>
-                {/* Left: Photo + Name */}
-                <div className="flex-shrink-0 p-4" style={{ width: 240 }}>
-                  <div className="relative w-full h-full rounded-xl overflow-hidden bg-gray-800">
-                    {player.photo ? (
-                      <img src={player.photo} alt={player.name} className="absolute inset-0 w-full h-full object-cover object-top" />
-                    ) : (
-                      <div className="absolute inset-0 bg-red-900/20 flex items-center justify-center text-6xl opacity-30">⚾</div>
-                    )}
-                    {/* Gradient overlay at bottom */}
-                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/90 to-transparent" />
-                    {/* Name + Number overlay */}
-                    <div className="absolute bottom-3 left-3 right-2">
-                      <div className="text-xl font-extrabold text-white leading-tight drop-shadow-lg">{player.name}</div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-red-500 text-lg font-bold">#{player.number}</span>
-                        <span className="text-xs font-bold uppercase tracking-widest text-red-400/60">KC Blaze</span>
-                      </div>
-                    </div>
-                    {/* Big number watermark */}
-                    <div className="absolute top-2 right-3 text-6xl font-extrabold text-white/10 leading-none">{player.number}</div>
-                  </div>
-                </div>
-
-                {/* Vertical divider */}
-                <div className="w-px my-4" style={{ background: "linear-gradient(180deg, transparent, #dc2626, transparent)" }} />
-
-                {/* Right: Info columns */}
+              <div className="relative flex items-stretch" style={{ height: 388 }}>
+                {/* Left: Info */}
                 <div className="flex-1 p-5">
-                  <div className="grid grid-cols-2 gap-3 h-full content-start">
+                  {/* Name + Number header */}
+                  <div className="mb-4">
+                    <div className="text-3xl font-extrabold text-white leading-tight">{player.name}</div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-red-500 text-xl font-bold">#{player.number}</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-red-400/50">KC Blaze</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 content-start">
                     {player.favoriteCandy && (
-                      <div className="bg-white/5 rounded-lg px-4 py-3 border border-white/5">
+                      <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10">
                         <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">Favorite Candy</div>
-                        <div className="text-white text-sm">{player.favoriteCandy}</div>
+                        <div className="text-gray-100 text-sm">{player.favoriteCandy}</div>
                       </div>
                     )}
                     {player.outsideActivity && (
-                      <div className="bg-white/5 rounded-lg px-4 py-3 border border-white/5">
+                      <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10">
                         <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">Outside of Baseball</div>
-                        <div className="text-white text-sm">{player.outsideActivity}</div>
+                        <div className="text-gray-100 text-sm">{player.outsideActivity}</div>
                       </div>
                     )}
                     {player.favoriteMemory && (
-                      <div className="bg-white/5 rounded-lg px-4 py-3 border border-white/5 col-span-2">
+                      <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10 col-span-2">
                         <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">Favorite Baseball Memory</div>
-                        <div className="text-white text-sm">{player.favoriteMemory}</div>
+                        <div className="text-gray-100 text-sm">{player.favoriteMemory}</div>
                       </div>
                     )}
                     {player.family.some((m) => m.name) && (
-                      <div className="bg-white/5 rounded-lg px-4 py-3 border border-white/5 col-span-2">
+                      <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10 col-span-2">
                         <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-2">Family</div>
                         <div className="flex flex-wrap gap-2">
                           {player.family
@@ -351,7 +341,7 @@ export default function Home() {
                             .map((m, i) => (
                               <span
                                 key={i}
-                                className="bg-red-900/40 text-white text-xs px-3 py-1 rounded-full border border-red-800/30"
+                                className="bg-red-900/40 text-white text-xs px-3 py-1 rounded-full border border-red-700/40"
                               >
                                 {m.name}
                                 {m.relation && (
@@ -364,10 +354,29 @@ export default function Home() {
                     )}
                   </div>
                 </div>
+
+                {/* Vertical divider */}
+                <div className="w-px my-4" style={{ background: "linear-gradient(180deg, transparent, #dc2626, transparent)" }} />
+
+                {/* Right: Photo in oval */}
+                <div className="flex-shrink-0 flex items-center justify-center p-6" style={{ width: 280 }}>
+                  <div
+                    className="relative overflow-hidden bg-gray-800/50"
+                    style={{ width: 220, height: 280, borderRadius: "50%", border: "4px solid rgba(220,38,38,0.5)", boxShadow: "0 0 30px rgba(220,38,38,0.15), inset 0 0 20px rgba(0,0,0,0.3)" }}
+                  >
+                    {player.photo ? (
+                      <img src={player.photo} alt={player.name} className="absolute inset-0 w-full h-full object-cover object-top" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center text-5xl opacity-20">⚾</div>
+                    )}
+                  </div>
+                  {/* Number watermark behind oval */}
+                  <div className="absolute bottom-4 right-6 text-8xl font-extrabold text-white/[0.04] leading-none">{player.number}</div>
+                </div>
               </div>
 
               {/* Bottom accent bar */}
-              <div className="h-2" style={{ background: "linear-gradient(90deg, #dc2626, #ef4444, #dc2626)" }} />
+              <div className="relative h-2" style={{ background: "linear-gradient(90deg, #dc2626, #ef4444, #dc2626)" }} />
             </div>
 
             {/* Action Buttons */}
