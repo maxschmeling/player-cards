@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import html2canvas from "html2canvas-pro";
 
 interface FamilyMember {
@@ -28,18 +28,19 @@ const emptyPlayer: PlayerData = {
   photo: null,
 };
 
-// Card dimensions: 2.5" x 3.5" ratio (5:7) — standard baseball card
 const CARD_W = 500;
 const CARD_H = 700;
 
 export default function Home() {
   const [player, setPlayer] = useState<PlayerData>(emptyPlayer);
   const [showCard, setShowCard] = useState(false);
-  const [cardSide, setCardSide] = useState<"front" | "back">("front");
+  const [flipped, setFlipped] = useState(false);
   const [generating, setGenerating] = useState(false);
   const frontRef = useRef<HTMLDivElement>(null);
   const backRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
   const updateField = (field: keyof PlayerData, value: string) => {
     setPlayer((prev) => ({ ...prev, [field]: value }));
@@ -78,8 +79,30 @@ export default function Home() {
 
   const generateCard = () => {
     setShowCard(true);
-    setCardSide("front");
+    setFlipped(false);
   };
+
+  const flipCard = useCallback(() => {
+    setFlipped((f) => !f);
+  }, []);
+
+  // Touch/swipe handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const dx = e.changedTouches[0].clientX - touchStartX.current;
+      const dy = e.changedTouches[0].clientY - touchStartY.current;
+      // Only flip on horizontal swipe (> 50px, and more horizontal than vertical)
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        flipCard();
+      }
+    },
+    [flipCard]
+  );
 
   const downloadImage = async (side: "front" | "back") => {
     const ref = side === "front" ? frontRef : backRef;
@@ -101,12 +124,8 @@ export default function Home() {
   };
 
   const downloadBoth = async () => {
-    // Temporarily show front, capture, then back, capture
     setGenerating(true);
     try {
-      // We need both refs visible — they're rendered but only one shown
-      // Actually both are always in DOM, just one is hidden via display
-      // Let's just download whichever is showing, then the other
       for (const side of ["front", "back"] as const) {
         const ref = side === "front" ? frontRef : backRef;
         if (!ref.current) continue;
@@ -127,7 +146,8 @@ export default function Home() {
   };
 
   const shareImage = async () => {
-    const ref = cardSide === "front" ? frontRef : backRef;
+    const side = flipped ? "back" : "front";
+    const ref = side === "front" ? frontRef : backRef;
     if (!ref.current) return;
     setGenerating(true);
     try {
@@ -138,7 +158,7 @@ export default function Home() {
       });
       canvas.toBlob(async (blob) => {
         if (!blob) return;
-        const file = new File([blob], `${player.name || "player"}-card-${cardSide}.png`, { type: "image/png" });
+        const file = new File([blob], `${player.name || "player"}-card-${side}.png`, { type: "image/png" });
         if (navigator.share) {
           await navigator.share({ files: [file] }).catch(() => {});
         } else {
@@ -158,6 +178,39 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
+      <style>{`
+        .card-scene {
+          perspective: 1200px;
+          width: ${CARD_W}px;
+          height: ${CARD_H}px;
+          cursor: pointer;
+        }
+        .card-inner {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          transform-style: preserve-3d;
+          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-inner.flipped {
+          transform: rotateY(180deg);
+        }
+        .card-face {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .card-face-back {
+          transform: rotateY(180deg);
+        }
+      `}</style>
+
       {/* Header */}
       <header className="bg-gradient-to-r from-gray-950 via-red-950 to-gray-950 border-b-4 border-red-600 px-6 py-6">
         <div className="max-w-2xl mx-auto text-center">
@@ -319,512 +372,143 @@ export default function Home() {
               ← Back to edit
             </button>
 
-            {/* Front/Back toggle */}
-            <div className="flex justify-center gap-2">
-              <button
-                onClick={() => setCardSide("front")}
-                className={`px-6 py-2 rounded-lg font-bold text-sm transition-colors ${
-                  cardSide === "front"
-                    ? "bg-red-600 text-white"
-                    : "bg-gray-800 text-gray-400 hover:text-white"
-                }`}
-              >
-                Front
-              </button>
-              <button
-                onClick={() => setCardSide("back")}
-                className={`px-6 py-2 rounded-lg font-bold text-sm transition-colors ${
-                  cardSide === "back"
-                    ? "bg-red-600 text-white"
-                    : "bg-gray-800 text-gray-400 hover:text-white"
-                }`}
-              >
-                Back
-              </button>
-            </div>
+            {/* Flip hint */}
+            <p className="text-center text-gray-500 text-sm">
+              {flipped ? "Showing back" : "Showing front"} — tap or swipe to flip
+            </p>
 
-            {/* Cards container — both always rendered for html2canvas */}
+            {/* 3D Flip Card */}
             <div className="flex justify-center">
-              {/* ===== FRONT OF CARD ===== */}
               <div
-                ref={frontRef}
-                style={{
-                  width: CARD_W,
-                  height: CARD_H,
-                  display: cardSide === "front" ? "block" : "none",
-                  borderRadius: 12,
-                  overflow: "hidden",
-                  position: "relative",
-                  fontFamily: "'Georgia', 'Times New Roman', serif",
-                }}
+                className="card-scene"
+                onClick={flipCard}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
               >
-                {/* Card border layer */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    borderRadius: 12,
-                    border: "8px solid #b91c1c",
-                    boxSizing: "border-box",
-                    zIndex: 10,
-                    pointerEvents: "none",
-                  }}
-                />
-
-                {/* Inner gold border */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 8,
-                    borderRadius: 6,
-                    border: "3px solid #d4a843",
-                    boxSizing: "border-box",
-                    zIndex: 10,
-                    pointerEvents: "none",
-                  }}
-                />
-
-                {/* Background — dark with subtle texture */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 50%, #1a0a0a 100%)",
-                  }}
-                />
-
-                {/* Photo area */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 14,
-                    left: 14,
-                    right: 14,
-                    height: 460,
-                    borderRadius: 4,
-                    overflow: "hidden",
-                    background: "#222",
-                  }}
-                >
-                  {player.photo ? (
-                    <img
-                      src={player.photo}
-                      alt={player.name}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        objectPosition: "top center",
-                      }}
-                    />
-                  ) : (
+                <div className={`card-inner ${flipped ? "flipped" : ""}`}>
+                  {/* ===== FRONT ===== */}
+                  <div className="card-face" ref={frontRef}>
                     <div
                       style={{
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        background: "linear-gradient(135deg, #333 0%, #1a1a1a 100%)",
+                        width: CARD_W,
+                        height: CARD_H,
+                        position: "relative",
+                        fontFamily: "'Georgia', 'Times New Roman', serif",
                       }}
                     >
-                      <img
-                        src="/kc-blaze-logo.jpg"
-                        alt="KC Blaze"
-                        style={{ width: 200, opacity: 0.3 }}
-                      />
-                    </div>
-                  )}
+                      {/* Borders */}
+                      <div style={{ position: "absolute", inset: 0, borderRadius: 12, border: "8px solid #b91c1c", boxSizing: "border-box", zIndex: 10, pointerEvents: "none" }} />
+                      <div style={{ position: "absolute", inset: 8, borderRadius: 6, border: "3px solid #d4a843", boxSizing: "border-box", zIndex: 10, pointerEvents: "none" }} />
 
-                  {/* Gradient fade at bottom of photo */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      height: 80,
-                      background: "linear-gradient(to top, rgba(0,0,0,0.9), transparent)",
-                    }}
-                  />
-                </div>
+                      {/* Background */}
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 50%, #1a0a0a 100%)", borderRadius: 12 }} />
 
-                {/* Team logo badge — top left */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 22,
-                    left: 22,
-                    width: 60,
-                    height: 60,
-                    borderRadius: "50%",
-                    background: "rgba(0,0,0,0.7)",
-                    border: "2px solid #d4a843",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    overflow: "hidden",
-                    zIndex: 5,
-                  }}
-                >
-                  <img
-                    src="/kc-blaze-logo.jpg"
-                    alt="KC Blaze"
-                    style={{ width: 50, height: 50, objectFit: "contain" }}
-                  />
-                </div>
+                      {/* Photo area */}
+                      <div style={{ position: "absolute", top: 14, left: 14, right: 14, height: 460, borderRadius: 4, overflow: "hidden", background: "#222" }}>
+                        {player.photo ? (
+                          <img src={player.photo} alt={player.name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }} />
+                        ) : (
+                          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #333 0%, #1a1a1a 100%)" }}>
+                            <img src="/kc-blaze-logo.jpg" alt="KC Blaze" style={{ width: 200, opacity: 0.3 }} />
+                          </div>
+                        )}
+                        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to top, rgba(0,0,0,0.9), transparent)" }} />
+                      </div>
 
-                {/* Number badge — top right */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 22,
-                    right: 22,
-                    background: "rgba(185,28,28,0.9)",
-                    border: "2px solid #d4a843",
-                    borderRadius: 8,
-                    padding: "4px 14px",
-                    zIndex: 5,
-                  }}
-                >
-                  <span
-                    style={{
-                      color: "white",
-                      fontSize: 28,
-                      fontWeight: 800,
-                      fontFamily: "'Arial Black', sans-serif",
-                    }}
-                  >
-                    #{player.number}
-                  </span>
-                </div>
+                      {/* Logo badge */}
+                      <div style={{ position: "absolute", top: 22, left: 22, width: 60, height: 60, borderRadius: "50%", background: "rgba(0,0,0,0.7)", border: "2px solid #d4a843", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", zIndex: 5 }}>
+                        <img src="/kc-blaze-logo.jpg" alt="KC Blaze" style={{ width: 50, height: 50, objectFit: "contain" }} />
+                      </div>
 
-                {/* Bottom nameplate area */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 220,
-                    background: "linear-gradient(180deg, #1a0808 0%, #0d0505 100%)",
-                  }}
-                >
-                  {/* Gold stripe accent */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 14,
-                      right: 14,
-                      height: 3,
-                      background: "linear-gradient(90deg, transparent, #d4a843, transparent)",
-                    }}
-                  />
+                      {/* Number badge */}
+                      <div style={{ position: "absolute", top: 22, right: 22, background: "rgba(185,28,28,0.9)", border: "2px solid #d4a843", borderRadius: 8, padding: "4px 14px", zIndex: 5 }}>
+                        <span style={{ color: "white", fontSize: 28, fontWeight: 800, fontFamily: "'Arial Black', sans-serif" }}>#{player.number}</span>
+                      </div>
 
-                  {/* Player name */}
-                  <div
-                    style={{
-                      paddingTop: 20,
-                      textAlign: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 700,
-                        letterSpacing: "0.15em",
-                        textTransform: "uppercase",
-                        color: "#d4a843",
-                        marginBottom: 6,
-                      }}
-                    >
-                      KC Blaze
-                    </div>
-                    <div
-                      style={{
-                        fontSize: player.name.length > 18 ? 32 : 40,
-                        fontWeight: 800,
-                        color: "white",
-                        textShadow: "0 2px 8px rgba(0,0,0,0.8)",
-                        lineHeight: 1.1,
-                        padding: "0 20px",
-                        fontStyle: "italic",
-                      }}
-                    >
-                      {player.name}
+                      {/* Nameplate */}
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 220, background: "linear-gradient(180deg, #1a0808 0%, #0d0505 100%)", borderRadius: "0 0 12px 12px" }}>
+                        <div style={{ position: "absolute", top: 0, left: 14, right: 14, height: 3, background: "linear-gradient(90deg, transparent, #d4a843, transparent)" }} />
+                        <div style={{ paddingTop: 20, textAlign: "center" }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#d4a843", marginBottom: 6 }}>KC Blaze</div>
+                          <div style={{ fontSize: player.name.length > 18 ? 32 : 40, fontWeight: 800, color: "white", textShadow: "0 2px 8px rgba(0,0,0,0.8)", lineHeight: 1.1, padding: "0 20px", fontStyle: "italic" }}>{player.name}</div>
+                        </div>
+                        <div style={{ position: "absolute", bottom: 16, left: 0, right: 0, display: "flex", justifyContent: "center", alignItems: "center", gap: 12 }}>
+                          <div style={{ width: 60, height: 1, background: "linear-gradient(90deg, transparent, #d4a843)" }} />
+                          <div style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "#d4a843", fontWeight: 700, fontFamily: "Arial, sans-serif" }}>Meet the Player</div>
+                          <div style={{ width: 60, height: 1, background: "linear-gradient(90deg, #d4a843, transparent)" }} />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Decorative bottom — baseball seam pattern */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: 16,
-                      left: 0,
-                      right: 0,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      gap: 12,
-                    }}
-                  >
-                    <div style={{ width: 60, height: 1, background: "linear-gradient(90deg, transparent, #d4a843)" }} />
+                  {/* ===== BACK ===== */}
+                  <div className="card-face card-face-back" ref={backRef}>
                     <div
                       style={{
-                        fontSize: 11,
-                        letterSpacing: "0.2em",
-                        textTransform: "uppercase",
-                        color: "#d4a843",
-                        fontWeight: 700,
+                        width: CARD_W,
+                        height: CARD_H,
+                        position: "relative",
                         fontFamily: "Arial, sans-serif",
                       }}
                     >
-                      Meet the Player
-                    </div>
-                    <div style={{ width: 60, height: 1, background: "linear-gradient(90deg, #d4a843, transparent)" }} />
-                  </div>
-                </div>
-              </div>
+                      {/* Borders */}
+                      <div style={{ position: "absolute", inset: 0, borderRadius: 12, border: "8px solid #b91c1c", boxSizing: "border-box", zIndex: 10, pointerEvents: "none" }} />
+                      <div style={{ position: "absolute", inset: 8, borderRadius: 6, border: "3px solid #d4a843", boxSizing: "border-box", zIndex: 10, pointerEvents: "none" }} />
 
-              {/* ===== BACK OF CARD ===== */}
-              <div
-                ref={backRef}
-                style={{
-                  width: CARD_W,
-                  height: CARD_H,
-                  display: cardSide === "back" ? "block" : "none",
-                  borderRadius: 12,
-                  overflow: "hidden",
-                  position: "relative",
-                  fontFamily: "Arial, sans-serif",
-                }}
-              >
-                {/* Card border layer */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    borderRadius: 12,
-                    border: "8px solid #b91c1c",
-                    boxSizing: "border-box",
-                    zIndex: 10,
-                    pointerEvents: "none",
-                  }}
-                />
+                      {/* Background */}
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #f5f0e8 0%, #ede6d8 50%, #e8e0d0 100%)", borderRadius: 12 }} />
+                      <div style={{ position: "absolute", inset: 0, opacity: 0.04, backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 15px, #b91c1c 15px, #b91c1c 16px), repeating-linear-gradient(-45deg, transparent, transparent 15px, #b91c1c 15px, #b91c1c 16px)", borderRadius: 12 }} />
 
-                {/* Inner gold border */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 8,
-                    borderRadius: 6,
-                    border: "3px solid #d4a843",
-                    boxSizing: "border-box",
-                    zIndex: 10,
-                    pointerEvents: "none",
-                  }}
-                />
-
-                {/* Background */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: "linear-gradient(180deg, #f5f0e8 0%, #ede6d8 50%, #e8e0d0 100%)",
-                  }}
-                />
-
-                {/* Subtle diamond pattern */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    opacity: 0.04,
-                    backgroundImage:
-                      "repeating-linear-gradient(45deg, transparent, transparent 15px, #b91c1c 15px, #b91c1c 16px), repeating-linear-gradient(-45deg, transparent, transparent 15px, #b91c1c 15px, #b91c1c 16px)",
-                  }}
-                />
-
-                {/* Content */}
-                <div
-                  style={{
-                    position: "relative",
-                    zIndex: 5,
-                    padding: "24px 28px",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  {/* Header */}
-                  <div style={{ textAlign: "center", marginBottom: 16 }}>
-                    <img
-                      src="/kc-blaze-logo.jpg"
-                      alt="KC Blaze"
-                      style={{ width: 70, height: 70, objectFit: "contain", margin: "0 auto 8px" }}
-                    />
-                    <div
-                      style={{
-                        fontSize: 24,
-                        fontWeight: 800,
-                        color: "#1a1a1a",
-                        fontFamily: "'Georgia', serif",
-                        fontStyle: "italic",
-                      }}
-                    >
-                      {player.name}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 700,
-                        color: "#b91c1c",
-                        marginTop: 2,
-                      }}
-                    >
-                      #{player.number}
-                    </div>
-                  </div>
-
-                  {/* Gold divider */}
-                  <div
-                    style={{
-                      height: 2,
-                      background: "linear-gradient(90deg, transparent, #d4a843, transparent)",
-                      marginBottom: 16,
-                    }}
-                  />
-
-                  {/* Info sections */}
-                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 14 }}>
-                    {player.favoriteCandy && (
-                      <div>
-                        <div
-                          style={{
-                            fontSize: 10,
-                            fontWeight: 800,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.15em",
-                            color: "#b91c1c",
-                            marginBottom: 4,
-                          }}
-                        >
-                          Favorite Candy
+                      {/* Content */}
+                      <div style={{ position: "relative", zIndex: 5, padding: "24px 28px", height: "100%", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
+                        {/* Header */}
+                        <div style={{ textAlign: "center", marginBottom: 16 }}>
+                          <img src="/kc-blaze-logo.jpg" alt="KC Blaze" style={{ width: 70, height: 70, objectFit: "contain", margin: "0 auto 8px", display: "block" }} />
+                          <div style={{ fontSize: 24, fontWeight: 800, color: "#1a1a1a", fontFamily: "'Georgia', serif", fontStyle: "italic" }}>{player.name}</div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: "#b91c1c", marginTop: 2 }}>#{player.number}</div>
                         </div>
-                        <div style={{ fontSize: 15, color: "#1a1a1a", lineHeight: 1.4 }}>
-                          {player.favoriteCandy}
-                        </div>
-                      </div>
-                    )}
 
-                    {player.outsideActivity && (
-                      <div>
-                        <div
-                          style={{
-                            fontSize: 10,
-                            fontWeight: 800,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.15em",
-                            color: "#b91c1c",
-                            marginBottom: 4,
-                          }}
-                        >
-                          Outside of Baseball
-                        </div>
-                        <div style={{ fontSize: 15, color: "#1a1a1a", lineHeight: 1.4 }}>
-                          {player.outsideActivity}
-                        </div>
-                      </div>
-                    )}
+                        <div style={{ height: 2, background: "linear-gradient(90deg, transparent, #d4a843, transparent)", marginBottom: 16 }} />
 
-                    {player.favoriteMemory && (
-                      <div>
-                        <div
-                          style={{
-                            fontSize: 10,
-                            fontWeight: 800,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.15em",
-                            color: "#b91c1c",
-                            marginBottom: 4,
-                          }}
-                        >
-                          Favorite Baseball Memory
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 15,
-                            color: "#1a1a1a",
-                            lineHeight: 1.4,
-                            fontStyle: "italic",
-                          }}
-                        >
-                          &ldquo;{player.favoriteMemory}&rdquo;
-                        </div>
-                      </div>
-                    )}
-
-                    {player.family.some((m) => m.name) && (
-                      <div>
-                        <div
-                          style={{
-                            fontSize: 10,
-                            fontWeight: 800,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.15em",
-                            color: "#b91c1c",
-                            marginBottom: 8,
-                          }}
-                        >
-                          Family
-                        </div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                          {player.family
-                            .filter((m) => m.name)
-                            .map((m, i) => (
-                              <span
-                                key={i}
-                                style={{
-                                  background: "#b91c1c",
-                                  color: "white",
-                                  fontSize: 12,
-                                  fontWeight: 600,
-                                  padding: "4px 12px",
-                                  borderRadius: 20,
-                                }}
-                              >
-                                {m.name}
-                                {m.relation && (
-                                  <span style={{ opacity: 0.7, marginLeft: 4 }}>
-                                    ({m.relation})
+                        {/* Info */}
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 14 }}>
+                          {player.favoriteCandy && (
+                            <div>
+                              <div style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", color: "#b91c1c", marginBottom: 4 }}>Favorite Candy</div>
+                              <div style={{ fontSize: 15, color: "#1a1a1a", lineHeight: 1.4 }}>{player.favoriteCandy}</div>
+                            </div>
+                          )}
+                          {player.outsideActivity && (
+                            <div>
+                              <div style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", color: "#b91c1c", marginBottom: 4 }}>Outside of Baseball</div>
+                              <div style={{ fontSize: 15, color: "#1a1a1a", lineHeight: 1.4 }}>{player.outsideActivity}</div>
+                            </div>
+                          )}
+                          {player.favoriteMemory && (
+                            <div>
+                              <div style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", color: "#b91c1c", marginBottom: 4 }}>Favorite Baseball Memory</div>
+                              <div style={{ fontSize: 15, color: "#1a1a1a", lineHeight: 1.4, fontStyle: "italic" }}>&ldquo;{player.favoriteMemory}&rdquo;</div>
+                            </div>
+                          )}
+                          {player.family.some((m) => m.name) && (
+                            <div>
+                              <div style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.15em", color: "#b91c1c", marginBottom: 8 }}>Family</div>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                {player.family.filter((m) => m.name).map((m, i) => (
+                                  <span key={i} style={{ background: "#b91c1c", color: "white", fontSize: 12, fontWeight: 600, padding: "4px 12px", borderRadius: 20 }}>
+                                    {m.name}{m.relation && <span style={{ opacity: 0.7, marginLeft: 4 }}>({m.relation})</span>}
                                   </span>
-                                )}
-                              </span>
-                            ))}
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Footer */}
+                        <div style={{ textAlign: "center", paddingTop: 12, borderTop: "2px solid rgba(212,168,67,0.3)" }}>
+                          <div style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#999", fontWeight: 700 }}>KC Blaze &bull; 2026 Season</div>
                         </div>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Bottom decorative */}
-                  <div
-                    style={{
-                      textAlign: "center",
-                      paddingTop: 12,
-                      borderTop: "2px solid rgba(212,168,67,0.3)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 10,
-                        letterSpacing: "0.2em",
-                        textTransform: "uppercase",
-                        color: "#999",
-                        fontWeight: 700,
-                      }}
-                    >
-                      KC Blaze &bull; 2026 Season
                     </div>
                   </div>
                 </div>
@@ -834,21 +518,21 @@ export default function Home() {
             {/* Action Buttons */}
             <div className="flex gap-3">
               <button
-                onClick={() => downloadImage(cardSide)}
+                onClick={(e) => { e.stopPropagation(); downloadImage(flipped ? "back" : "front"); }}
                 disabled={generating}
                 className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-colors"
               >
-                {generating ? "Generating..." : `Download ${cardSide === "front" ? "Front" : "Back"}`}
+                {generating ? "Generating..." : `Download ${flipped ? "Back" : "Front"}`}
               </button>
               <button
-                onClick={downloadBoth}
+                onClick={(e) => { e.stopPropagation(); downloadBoth(); }}
                 disabled={generating}
                 className="flex-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-colors border border-gray-700"
               >
                 {generating ? "..." : "Download Both"}
               </button>
               <button
-                onClick={shareImage}
+                onClick={(e) => { e.stopPropagation(); shareImage(); }}
                 disabled={generating}
                 className="bg-gray-800 hover:bg-gray-700 disabled:opacity-50 text-white font-bold py-3 px-5 rounded-xl transition-colors border border-gray-700"
               >
