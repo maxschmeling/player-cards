@@ -304,9 +304,10 @@ export default function Home() {
               <div className="relative flex items-stretch" style={{ height: 388 }}>
                 {/* Left: Info */}
                 <div className="flex-1 p-5">
-                  {/* Name + Number header */}
+                  {/* Title + Name + Number header */}
                   <div className="mb-4">
-                    <div className="text-3xl font-extrabold text-white leading-tight">{player.name}</div>
+                    <div className="text-xs font-bold uppercase tracking-[0.2em] text-red-400/60 mb-1">Meet the Player</div>
+                    <div className="text-3xl text-white leading-tight" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontWeight: 800, fontStyle: "italic" }}>{player.name}</div>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-red-500 text-xl font-bold">#{player.number}</span>
                       <span className="text-xs font-bold uppercase tracking-widest text-red-400/50">KC Blaze</span>
