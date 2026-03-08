@@ -289,7 +289,7 @@ export default function Home() {
             <div
               ref={cardRef}
               className="relative overflow-hidden"
-              style={{ width: 900, height: 400, borderRadius: 16, border: "4px solid #dc2626" }}
+              style={{ width: 740, height: 400, borderRadius: 16, border: "4px solid #dc2626" }}
             >
               {/* Background with subtle pattern */}
               <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #1f1215 0%, #2a1a1e 30%, #1e1215 60%, #2d1f23 100%)" }} />
@@ -372,7 +372,7 @@ export default function Home() {
                     )}
                   </div>
                   {/* Number watermark behind oval */}
-                  <div className="absolute bottom-4 right-6 text-8xl font-extrabold text-white/[0.04] leading-none">{player.number}</div>
+                  <div className="absolute bottom-4 right-6 text-8xl font-extrabold text-white/[0.08] leading-none">{player.number}</div>
                 </div>
               </div>
 
