@@ -302,13 +302,69 @@ export default function Home() {
               <div className="relative h-2" style={{ background: "linear-gradient(90deg, #dc2626, #ef4444, #dc2626)" }} />
 
               <div className="relative flex flex-col" style={{ height: 728 }}>
-                {/* Top: Photo + Name */}
-                <div className="flex items-center gap-6 p-5 pb-3">
-                  {/* Photo in oval */}
-                  <div className="flex-shrink-0">
+                <div className="relative flex items-stretch flex-1">
+                  {/* Left: Info */}
+                  <div className="flex-1 p-5">
+                    {/* Title + Name + Number header */}
+                    <div className="mb-4">
+                      <div className="text-xs font-bold uppercase tracking-[0.2em] text-red-400/60 mb-1">Meet the Player</div>
+                      <div className="text-3xl text-white leading-tight" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontWeight: 800, fontStyle: "italic" }}>{player.name}</div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-red-500 text-xl font-bold">#{player.number}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-red-400/50">KC Blaze</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {player.favoriteCandy && (
+                        <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10">
+                          <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">Favorite Candy</div>
+                          <div className="text-gray-100 text-sm">{player.favoriteCandy}</div>
+                        </div>
+                      )}
+                      {player.outsideActivity && (
+                        <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10">
+                          <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">Outside of Baseball</div>
+                          <div className="text-gray-100 text-sm">{player.outsideActivity}</div>
+                        </div>
+                      )}
+                      {player.favoriteMemory && (
+                        <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10">
+                          <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">Favorite Baseball Memory</div>
+                          <div className="text-gray-100 text-sm">{player.favoriteMemory}</div>
+                        </div>
+                      )}
+                      {player.family.some((m) => m.name) && (
+                        <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10">
+                          <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-2">Family</div>
+                          <div className="flex flex-wrap gap-2">
+                            {player.family
+                              .filter((m) => m.name)
+                              .map((m, i) => (
+                                <span
+                                  key={i}
+                                  className="bg-red-900/40 text-white text-xs px-3 py-1 rounded-full border border-red-700/40"
+                                >
+                                  {m.name}
+                                  {m.relation && (
+                                    <span className="text-red-300/70 ml-1">({m.relation})</span>
+                                  )}
+                                </span>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Vertical divider */}
+                  <div className="w-px my-4" style={{ background: "linear-gradient(180deg, transparent, #dc2626, transparent)" }} />
+
+                  {/* Right: Photo in oval */}
+                  <div className="flex-shrink-0 flex items-center justify-center p-6" style={{ width: 280 }}>
                     <div
                       className="relative overflow-hidden bg-gray-800/50"
-                      style={{ width: 180, height: 230, borderRadius: "50%", border: "4px solid rgba(220,38,38,0.5)", boxShadow: "0 0 30px rgba(220,38,38,0.15), inset 0 0 20px rgba(0,0,0,0.3)" }}
+                      style={{ width: 220, height: 280, borderRadius: "50%", border: "4px solid rgba(220,38,38,0.5)", boxShadow: "0 0 30px rgba(220,38,38,0.15), inset 0 0 20px rgba(0,0,0,0.3)" }}
                     >
                       {player.photo ? (
                         <img src={player.photo} alt={player.name} className="absolute inset-0 w-full h-full object-cover object-top" />
@@ -316,66 +372,10 @@ export default function Home() {
                         <div className="absolute inset-0 flex items-center justify-center text-5xl opacity-20">⚾</div>
                       )}
                     </div>
-                  </div>
-
-                  {/* Name + Number */}
-                  <div className="flex-1">
-                    <div className="text-xs font-bold uppercase tracking-[0.2em] text-red-400/60 mb-1">Meet the Player</div>
-                    <div className="text-3xl text-white leading-tight" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontWeight: 800, fontStyle: "italic" }}>{player.name}</div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-red-500 text-xl font-bold">#{player.number}</span>
-                      <span className="text-xs font-bold uppercase tracking-widest text-red-400/50">KC Blaze</span>
-                    </div>
+                    {/* Number watermark behind oval */}
+                    <div className="absolute bottom-4 right-6 text-8xl font-extrabold text-white/[0.08] leading-none">{player.number}</div>
                   </div>
                 </div>
-
-                {/* Horizontal divider */}
-                <div className="h-px mx-5" style={{ background: "linear-gradient(90deg, transparent, #dc2626, transparent)" }} />
-
-                {/* Info boxes — full width, stacked */}
-                <div className="flex-1 p-5 pt-3 space-y-3 overflow-hidden">
-                    {player.favoriteCandy && (
-                      <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10">
-                        <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">Favorite Candy</div>
-                        <div className="text-gray-100 text-sm">{player.favoriteCandy}</div>
-                      </div>
-                    )}
-                    {player.outsideActivity && (
-                      <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10">
-                        <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">Outside of Baseball</div>
-                        <div className="text-gray-100 text-sm">{player.outsideActivity}</div>
-                      </div>
-                    )}
-                    {player.favoriteMemory && (
-                      <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10">
-                        <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1">Favorite Baseball Memory</div>
-                        <div className="text-gray-100 text-sm">{player.favoriteMemory}</div>
-                      </div>
-                    )}
-                    {player.family.some((m) => m.name) && (
-                      <div className="bg-white/[0.07] rounded-lg px-4 py-3 border border-white/10">
-                        <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-2">Family</div>
-                        <div className="flex flex-wrap gap-2">
-                          {player.family
-                            .filter((m) => m.name)
-                            .map((m, i) => (
-                              <span
-                                key={i}
-                                className="bg-red-900/40 text-white text-xs px-3 py-1 rounded-full border border-red-700/40"
-                              >
-                                {m.name}
-                                {m.relation && (
-                                  <span className="text-red-300/70 ml-1">({m.relation})</span>
-                                )}
-                              </span>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-                </div>
-
-                {/* Number watermark */}
-                <div className="absolute bottom-4 right-6 text-8xl font-extrabold text-white/[0.08] leading-none">{player.number}</div>
               </div>
 
               {/* Bottom accent bar */}
